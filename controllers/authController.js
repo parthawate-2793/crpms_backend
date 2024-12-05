@@ -6,24 +6,26 @@ const generateToken = (id) => {
 };
 
 const registerUser = async (req,res) => {
-    const { name, email, password} = req.body;
+    const { name, email, password, role} = req.body;
 
     console.log(name);
-    console.log(email);
-    console.log(password);
+    console.log(email, `Type: ${typeof email}`);
+    console.log(password, `Type: ${typeof password}`);
+    console.log(role, `Type: ${typeof role}`)
     try {
-        if(typeof email !== "string" || typeof password !=="password"){
+        if (typeof email !== "string" || typeof password !== "string" || typeof role !== "string") {
             return res.status(400).json({message: 'Invalid input data type'});
         }
         const userExists = await User.findOne({ email });
         if (userExists) {
             res.status(400).json({ message: 'User already exists' });
         } else {
-            const user = await User.create({ name, string, password });
+            const user = await User.create({ name, email, password,role });
             res.status(201).json({
                 _id: user.id,
                 name: user.name,
                 email: user.email,
+                role: user.role,
                 token: generateToken(user.id),
             });
         }
@@ -35,6 +37,9 @@ const registerUser = async (req,res) => {
 
 const loginUser = async(req,res) => {
     const { email, password } = req.body;
+
+    console.log(email);
+    console.log(password);
     try {
         const user = await User.findOne({ email });
         if(user && (await user.matchPassword(password))) {

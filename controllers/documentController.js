@@ -1,4 +1,5 @@
 const Document = require('../models/Document');
+const PDFDocument = require("pdfkit");
 
 const createDocument = async (req, res) => {
   const { title, content } = req.body;
@@ -13,11 +14,13 @@ const createDocument = async (req, res) => {
 };
 
 const getDocuments = async (req, res) => {
+  // console.log('Hit getDocuments');
   const documents = await Document.find({ authors: req.user.id });
   res.json(documents);
 };
 
 const getDocumentById = async (req, res) => {
+  console.log('Hit getDocumenById');
   const document = await Document.findById(req.params.id).populate('authors').populate('citations').populate('versions');
   
   if (document) {
@@ -52,10 +55,31 @@ const deleteDocument = async (req, res) => {
   }
 };
 
+const downloadPDF = async(req,res) => {
+  try {
+    const document = await Document.findById(req.params.id).catch(()=>null);
+    if(!document) {
+      return res.status(404).send("Document not found");
+    }
+    const doc = new PDFDocument();
+    res.setHeader("Content-Type","application/pdf");
+    res.setHeader("Content-Disposition",`attachment; filename = "${document.title}.pdf"`);
+    doc.pipe(res);
+    doc.fontSize(20).text(document.title, { align: "center", underline: true});
+    doc.moveDown();
+    doc.fontSize(14).text(document.content, { align: "justify",lineGap: 6});
+    doc.end();
+  } catch(error) {
+    console.error("Error generating PDF:",error);
+    res.status(500).json({ message: "An error occurred while generating the PDF"});
+  }
+}
+
 module.exports = {
   createDocument,
   getDocuments,
   getDocumentById,
   updateDocument,
   deleteDocument,
+  downloadPDF,
 };

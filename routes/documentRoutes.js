@@ -1,5 +1,5 @@
 const express = require('express');
-const { createDocument, getDocuments, getDocumentById, updateDocument, deleteDocument } = require('../controllers/documentController');
+const { createDocument, getDocuments, getDocumentById, updateDocument, deleteDocument,downloadPDF } = require('../controllers/documentController');
 const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -12,5 +12,8 @@ router.route('/:id')
   .get(protect, getDocumentById)
   .put(protect, updateDocument)
   .delete(protect, deleteDocument);
+
+router.route('/:id/download')
+  .get(protect,downloadPDF);
 
 module.exports = router;
