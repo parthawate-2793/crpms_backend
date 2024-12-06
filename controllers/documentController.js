@@ -44,7 +44,7 @@ const updateDocument = async (req, res) => {
   const { title, content } = req.body;
   const document = await Document.findById(req.params.id);
 
-  if (document && document.authors.includes(req.user.id)) {
+  if (document) {
     document.title = title || document.title;
     document.content = content || document.content;
     await document.save();
