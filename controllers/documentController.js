@@ -19,6 +19,16 @@ const getDocuments = async (req, res) => {
   res.json(documents);
 };
 
+const getAllDocuments = async(req,res) => {
+  try{
+    const document = await Document.find().populate('authors').populate('citations').populate('versions');
+    res.json(document);
+  } catch(error) {
+    console.error('Error in fetching all docs:',error);
+    res.status(500).json({ message: 'An error occured while fetching documentss'});
+  }
+}
+
 const getDocumentById = async (req, res) => {
   console.log('Hit getDocumenById');
   const document = await Document.findById(req.params.id).populate('authors').populate('citations').populate('versions');
@@ -78,6 +88,7 @@ const downloadPDF = async(req,res) => {
 module.exports = {
   createDocument,
   getDocuments,
+  getAllDocuments,
   getDocumentById,
   updateDocument,
   deleteDocument,

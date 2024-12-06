@@ -1,5 +1,5 @@
 const express = require('express');
-const { createDocument, getDocuments, getDocumentById, updateDocument, deleteDocument,downloadPDF } = require('../controllers/documentController');
+const { createDocument, getDocuments, getAllDocuments, getDocumentById, updateDocument, deleteDocument,downloadPDF } = require('../controllers/documentController');
 const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -7,6 +7,9 @@ const router = express.Router();
 router.route('/')
   .post(protect, createDocument)
   .get(protect, getDocuments);
+
+router.route('/all')
+  .get(getAllDocuments);
 
 router.route('/:id')
   .get(protect, getDocumentById)
